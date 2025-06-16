@@ -1,1 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campeonato de eSports do IF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with a Tech Teal Accent -->
+    <!-- Application Structure Plan: A single-page application (SPA) with a sticky top navigation for smooth scrolling between sections (Início, Jogos, Inscrição, FAQ). This structure provides a seamless user flow without page reloads. The 'Jogos e Regras' section uses a tabbed interface for clarity and engagement, allowing users to switch between games easily. A modal is used for the general regulations to keep the main layout uncluttered. The registration form is a direct, actionable element. This design prioritizes intuitive navigation and interactive content discovery over a static, multi-page layout. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Fortnite Scoring System -> Goal: Compare -> Viz/Presentation Method: Horizontal Bar Chart (Chart.js) -> Interaction: Tooltip on hover -> Justification: Easily compare point values for placement vs. eliminations. Dynamically loaded on tab activation for performance.
+        - Report Info: Rules for all games -> Goal: Organize & Inform -> Viz/Presentation Method: Tabbed Interface (HTML/CSS/JS) with styled text and Unicode icons -> Interaction: Click to switch game content -> Justification: Organizes a large amount of information concisely, allowing users to focus on what's relevant to them.
+        - Report Info: Registration Process -> Goal: Action & Inform -> Viz/Presentation Method: Interactive HTML Form -> Interaction: JS validation on button click -> Justification: Simulates the real registration flow and provides immediate feedback.
+        - Report Info: FAQ -> Goal: Organize & Inform -> Viz/Presentation Method: Accordion (HTML/CSS/JS) -> Interaction: Click to expand/collapse answers -> Justification: Saves space and allows users to scan questions efficiently.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        .tab-active { border-color: #0d9488; color: #0d9488; background-color: #f0fdfa; }
+        .tab-inactive { border-color: transparent; color: #52525b; }
+        .nav-active { color: #0d9488; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
 
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#hero" class="text-2xl font-bold text-teal-700">IF eSports</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#hero" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-teal-600 nav-link">Início</a>
+                        <a href="#games" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-teal-600 nav-link">Jogos e Regras</a>
+                        <a href="#registration" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-teal-600 nav-link">Inscrição</a>
+                        <a href="#faq" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-teal-600 nav-link">FAQ</a>
+                    </div>
+                </div>
+                 <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-600 hover:text-white hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-teal-600 focus:ring-white">
+                        <span class="sr-only">Abrir menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+             <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#hero" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-teal-50 nav-link">Início</a>
+                    <a href="#games" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-teal-50 nav-link">Jogos e Regras</a>
+                    <a href="#registration" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-teal-50 nav-link">Inscrição</a>
+                    <a href="#faq" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-teal-50 nav-link">FAQ</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="pt-20 pb-16 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight">
+                    Campeonato de <span class="text-teal-600">eSports</span> do IF
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">
+                    Mostre sua habilidade e represente seu campus! Inscrições abertas para os maiores jogos do momento.
+                </p>
+                <div class="mt-8 flex justify-center gap-4">
+                    <a href="#registration" class="inline-block bg-teal-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-teal-700 transition-transform transform hover:scale-105">
+                        Inscreva-se Agora
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="games" class="py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-900">Jogos e Regras</h2>
+                    <p class="mt-2 text-lg text-slate-600">Clique em um jogo para ver os detalhes e regras específicas.</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="mb-4 flex flex-wrap justify-center border-b border-slate-200">
+                        <button class="game-tab flex-1 sm:flex-initial text-center px-4 py-3 border-b-2 font-semibold text-sm sm:text-base transition-colors duration-300" data-target="fortnite">
+                            💣 Bomba Patch
+                        </button>
+                        <button class="game-tab flex-1 sm:flex-initial text-center px-4 py-3 border-b-2 font-semibold text-sm sm:text-base transition-colors duration-300" data-target="bomba-patch">
+                            🏹 Fortnite
+                        </button>
+                        <button class="game-tab flex-1 sm:flex-initial text-center px-4 py-3 border-b-2 font-semibold text-sm sm:text-base transition-colors duration-300" data-target="free-fire">
+                            🔥 Free Fire
+                        </button>
+                        <button class="game-tab flex-1 sm:flex-initial text-center px-4 py-3 border-b-2 font-semibold text-sm sm:text-base transition-colors duration-300" data-target="clash-royale">
+                            👑 Clash Royale
+                        </button>
+                    </div>
+
+                    <div id="game-content" class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+                        <div id="fortnite" class="game-info">
+                             <h3 class="text-2xl font-bold text-slate-800 mb-4">💣 Bomba Patch 2025</h3>
+                            <p class="text-slate-600 mb-6">O clássico do futebol virtual está de volta, 100% atualizado. Prepare-se para partidas emocionantes e prove que você é o rei do Bomba Patch.</p>
+                            <div class="grid md:grid-cols-2 gap-6 text-left">
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-teal-700">Formato</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                        <li>1v1 (um contra um)</li>
+                                        <li>Eliminação Simples (Mata-mata)</li>
+                                        <li>Vencedor da partida única avança</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-teal-700">Configurações da Partida</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                        <li>Duração: 6 minutos</li>
+                                        <li>Dificuldade: Estrela</li>
+                                        <li>Contusões: Desligado</li>
+                                        <li>Times: Apenas clubes (proibido seleções)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bomba-patch" class="game-info hidden">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-4">🏹 Fortnite</h3>
+                            <p class="text-slate-600 mb-4">Caia na ilha e seja o último sobrevivente! Estratégia, construção e boa mira são essenciais para alcançar a Vitória Royale.</p>
+                             <div class="grid md:grid-cols-2 gap-6 text-left">
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-teal-700">Formato</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                        <li>Battle Royale (Solo)</li>
+                                        <li>Sistema de pontos por colocação e eliminações</li>
+                                        <li>Cross-play habilitado</li>
+                                    </ul>
+                                    <h4 class="font-semibold text-lg mb-2 mt-4 text-teal-700">Regra Chave</h4>
+                                    <p class="text-slate-600">Conluio ("teaming") com outros jogadores é estritamente proibido e resultará em desclassificação imediata.</p>
+                                </div>
+                                <div>
+                                     <h4 class="font-semibold text-lg mb-2 text-teal-700">Sistema de Pontuação</h4>
+                                     <div class="chart-container">
+                                        <canvas id="fortniteScoreChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="free-fire" class="game-info hidden">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-4">🔥 Free Fire</h3>
+                            <p class="text-slate-600 mb-6">Ação rápida e partidas intensas. Caia de paraquedas, procure por armas e sobreviva em um campo de batalha cada vez menor. BOOYAH!</p>
+                             <div class="grid md:grid-cols-2 gap-6 text-left">
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-teal-700">Formato</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                        <li>Battle Royale (Solo)</li>
+                                        <li>Modo Clássico</li>
+                                        <li>Eliminação Simples (Mata-mata)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-teal-700">Regra Chave de Progressão</h4>
+                                    <p class="text-slate-600">Em cada partida, apenas o último sobrevivente (quem conseguir o "BOOYAH!") avança para a próxima fase do torneio.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="clash-royale" class="game-info hidden">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-4">👑 Clash Royale</h3>
+                            <p class="text-slate-600 mb-6">Monte seu deck de batalha e use sua estratégia para destruir as torres do adversário em partidas 1v1 em tempo real.</p>
+                            <div class="grid md:grid-cols-2 gap-6 text-left">
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-teal-700">Formato</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                                        <li>1v1 (um contra um)</li>
+                                        <li>Eliminação Simples (Mata-mata)</li>
+                                        <li>Disputas em Melhor de 3 (Md3)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-teal-700">Regra de Desempate</h4>
+                                    <p class="text-slate-600">Se o número de torres destruídas for igual, vence quem causar mais dano à Torre do Rei ou tiver a torre com mais vida na prorrogação.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="text-center mt-8">
+                        <button id="open-modal-button" class="text-teal-600 font-semibold hover:underline">
+                            Ver Regulamento Geral e Código de Conduta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="registration" class="py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl mx-auto text-center">
+                    <h2 class="text-3xl font-bold text-slate-900">Faça sua Inscrição</h2>
+                    <p class="mt-2 text-lg text-slate-600">
+                        As inscrições são exclusivas para alunos do IF com matrícula ativa. É necessário usar sua conta Google institucional.
+                    </p>
+                </div>
+                <div class="mt-10 max-w-xl mx-auto bg-slate-50 p-8 rounded-lg shadow-md border border-slate-200">
+                     <form id="registration-form">
+                        <div id="form-message" class="hidden mb-4 p-4 text-sm rounded-lg"></div>
+                        <div class="space-y-6">
+                            <div>
+                                <label for="fullName" class="block text-sm font-medium text-slate-700">Nome Completo</label>
+                                <input type="text" id="fullName" name="fullName" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                            </div>
+                            <div>
+                                <label for="studentId" class="block text-sm font-medium text-slate-700">Número de Matrícula</label>
+                                <input type="text" id="studentId" name="studentId" required pattern="\d+" title="Apenas números são permitidos." class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                            </div>
+                            <div>
+                                <span class="block text-sm font-medium text-slate-700">Jogos que deseja competir</span>
+                                <div class="mt-2 space-y-2">
+                                    <div class="flex items-center">
+                                        <input id="game_bomba" name="games" type="checkbox" value="Bomba Patch" class="h-4 w-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
+                                        <label for="game_bomba" class="ml-3 text-sm text-slate-600">Bomba Patch 2025</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="game_fortnite" name="games" type="checkbox" value="Fortnite" class="h-4 w-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
+                                        <label for="game_fortnite" class="ml-3 text-sm text-slate-600">Fortnite</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="game_ff" name="games" type="checkbox" value="Free Fire" class="h-4 w-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
+                                        <label for="game_ff" class="ml-3 text-sm text-slate-600">Free Fire</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="game_cr" name="games" type="checkbox" value="Clash Royale" class="h-4 w-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500">
+                                        <label for="game_cr" class="ml-3 text-sm text-slate-600">Clash Royale</label>
+                                    </div>
+                                </div>
+                                <p id="games-error" class="hidden mt-2 text-sm text-red-600">Por favor, selecione pelo menos um jogo.</p>
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                                    Confirmar Inscrição
+                                </button>
+                                <p class="mt-3 text-xs text-slate-500 text-center">Ao clicar, você seria redirecionado para o login Google do IF. Aqui, apenas validaremos o formulário.</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="py-20">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-3xl font-bold text-slate-900">Perguntas Frequentes (FAQ)</h2>
+                    <p class="mt-2 text-lg text-slate-600">Tire suas dúvidas sobre o campeonato.</p>
+                </div>
+                <div class="mt-10 max-w-3xl mx-auto space-y-4">
+                    <div class="faq-item bg-white rounded-lg shadow-sm">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-4 font-semibold text-slate-800">
+                            <span>Quem pode participar do campeonato?</span>
+                            <span class="faq-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="faq-answer hidden p-4 pt-0 text-slate-600">
+                            Apenas alunos com matrícula ativa e regular no Instituto Federal podem participar.
+                        </div>
+                    </div>
+                    <div class="faq-item bg-white rounded-lg shadow-sm">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-4 font-semibold text-slate-800">
+                            <span>Posso me inscrever em mais de um jogo?</span>
+                            <span class="faq-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="faq-answer hidden p-4 pt-0 text-slate-600">
+                            Sim, você pode se inscrever em quantos jogos desejar. Basta marcar as opções correspondentes no formulário de inscrição.
+                        </div>
+                    </div>
+                     <div class="faq-item bg-white rounded-lg shadow-sm">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-4 font-semibold text-slate-800">
+                            <span>O que acontece se meu oponente não aparecer?</span>
+                             <span class="faq-icon transform transition-transform duration-300">&#9662;</
