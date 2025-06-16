@@ -276,4 +276,217 @@
                      <div class="faq-item bg-white rounded-lg shadow-sm">
                         <button class="faq-question w-full flex justify-between items-center text-left p-4 font-semibold text-slate-800">
                             <span>O que acontece se meu oponente não aparecer?</span>
-                             <span class="faq-icon transform transition-transform duration-300">&#9662;</
+                             <span class="faq-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="faq-answer hidden p-4 pt-0 text-slate-600">
+                           Será aplicado o W.O. (Walkover) após um período de tolerância de 15 minutos do horário marcado para a partida, conforme o Regulamento Geral.
+                        </div>
+                    </div>
+                    <div class="faq-item bg-white rounded-lg shadow-sm">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-4 font-semibold text-slate-800">
+                            <span>Como vou me comunicar com meu adversário?</span>
+                             <span class="faq-icon transform transition-transform duration-300">&#9662;</span>
+                        </button>
+                        <div class="faq-answer hidden p-4 pt-0 text-slate-600">
+                           Um servidor no Discord será criado para a comunicação oficial do evento. O link será enviado para o e-mail de todos os inscritos após o fim do período de inscrições.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2025 Campeonato de eSports do IF. Todos os direitos reservados.</p>
+            <p class="text-sm text-slate-400 mt-1">Uma iniciativa para promover a integração e a competição saudável.</p>
+        </div>
+    </footer>
+    
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 sticky top-0 bg-white border-b flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-900">Regulamento Geral e Código de Conduta</h3>
+                <button id="close-modal-button" class="text-slate-500 hover:text-slate-800">&times;</button>
+            </div>
+            <div class="p-6 text-slate-700 space-y-4">
+                <h4 class="font-bold text-lg">Capítulo I - DA ORGANIZAÇÃO</h4>
+                <p>A organização do campeonato é de responsabilidade da comissão de eventos do IF, que tem autoridade final sobre todas as decisões.</p>
+                <h4 class="font-bold text-lg">Capítulo II - DO CÓDIGO DE CONDUTA</h4>
+                <p>Todos os participantes devem manter um comportamento respeitoso. São estritamente proibidos:</p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Comportamento tóxico, assédio, discriminação ou linguagem ofensiva.</li>
+                    <li>Qualquer forma de trapaça (hacks, mods, exploits de bugs).</li>
+                    <li>Conluio (combinar resultados ou ações com oponentes).</li>
+                    <li>Compartilhamento de contas.</li>
+                </ul>
+                 <h4 class="font-bold text-lg">Capítulo III - DAS PENALIDADES</h4>
+                <p>A violação de qualquer regra pode resultar em penalidades que vão desde uma advertência verbal até a desclassificação imediata do torneio, a critério da organização.</p>
+                 <h4 class="font-bold text-lg">Capítulo IV - DAS DISPOSIÇÕES GERAIS</h4>
+                <p>O não comparecimento a uma partida (W.O.) será declarado após 15 minutos de tolerância. Disputas devem ser reportadas a um administrador do evento, cuja decisão será final.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameTabs = document.querySelectorAll('.game-tab');
+            const gameInfos = document.querySelectorAll('.game-info');
+            const registrationForm = document.getElementById('registration-form');
+            const formMessage = document.getElementById('form-message');
+            const gamesCheckboxes = document.querySelectorAll('input[name="games"]');
+            const gamesError = document.getElementById('games-error');
+            const faqItems = document.querySelectorAll('.faq-item');
+            const modal = document.getElementById('modal');
+            const openModalButton = document.getElementById('open-modal-button');
+            const closeModalButton = document.getElementById('close-modal-button');
+            let fortniteChart = null;
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section, #hero');
+            const headerHeight = document.getElementById('header').offsetHeight;
+
+            function changeActiveLink() {
+                let index = sections.length;
+                while(--index && window.scrollY + headerHeight < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('nav-active'));
+                const activeLink = document.querySelector(`.nav-link[href="#${sections[index].id}"]`);
+                if(activeLink) {
+                   activeLink.classList.add('nav-active');
+                }
+            }
+
+            changeActiveLink();
+            window.addEventListener('scroll', changeActiveLink);
+
+
+            function activateTab(tab) {
+                const target = tab.dataset.target;
+
+                gameTabs.forEach(t => t.classList.replace('tab-active', 'tab-inactive'));
+                tab.classList.replace('tab-inactive', 'tab-active');
+
+                gameInfos.forEach(info => {
+                    if (info.id === target) {
+                        info.classList.remove('hidden');
+                    } else {
+                        info.classList.add('hidden');
+                    }
+                });
+                
+                if (target === 'bomba-patch' && !fortniteChart) {
+                    renderFortniteChart();
+                }
+            }
+            
+            gameTabs.forEach(tab => {
+                tab.addEventListener('click', () => activateTab(tab));
+            });
+
+            activateTab(document.querySelector('.game-tab'));
+
+            function renderFortniteChart() {
+                const ctx = document.getElementById('fortniteScoreChart').getContext('2d');
+                fortniteChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Vitória Royale', '2º - 5º', '6º - 15º', '16º - 25º', 'Por Eliminação'],
+                        datasets: [{
+                            label: 'Pontos',
+                            data: [10, 7, 5, 3, 1],
+                            backgroundColor: ['#14b8a6', '#5eead4', '#99f6e4', '#ccfbf1', '#a8a29e'],
+                            borderColor: '#0f766e',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Pontuação por Desempenho' }
+                        },
+                        scales: {
+                            x: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            registrationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                let checkedOne = false;
+                
+                gamesCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        checkedOne = true;
+                    }
+                });
+
+                if (!checkedOne) {
+                    gamesError.classList.remove('hidden');
+                    isValid = false;
+                } else {
+                    gamesError.classList.add('hidden');
+                }
+                
+                const studentIdInput = document.getElementById('studentId');
+                if (!/^\d+$/.test(studentIdInput.value)) {
+                   isValid = false;
+                }
+
+                if (isValid && document.getElementById('fullName').value) {
+                    formMessage.textContent = 'Inscrição confirmada com sucesso! Você receberá um e-mail com mais detalhes.';
+                    formMessage.className = 'mb-4 p-4 text-sm rounded-lg bg-green-100 text-green-800';
+                    formMessage.classList.remove('hidden');
+                    registrationForm.reset();
+                } else {
+                    formMessage.textContent = 'Por favor, preencha todos os campos corretamente e selecione ao menos um jogo.';
+                    formMessage.className = 'mb-4 p-4 text-sm rounded-lg bg-red-100 text-red-800';
+                    formMessage.classList.remove('hidden');
+                }
+
+                setTimeout(() => {
+                    formMessage.classList.add('hidden');
+                }, 5000);
+            });
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const icon = item.querySelector('.faq-icon');
+                question.addEventListener('click', () => {
+                    const isHidden = answer.classList.contains('hidden');
+                    if (isHidden) {
+                        answer.classList.remove('hidden');
+                        icon.style.transform = 'rotate(180deg)';
+                    } else {
+                        answer.classList.add('hidden');
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            });
+            
+            openModalButton.addEventListener('click', () => modal.classList.remove('hidden'));
+            closeModalButton.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => {
+                if (e.target.id === 'modal') {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
